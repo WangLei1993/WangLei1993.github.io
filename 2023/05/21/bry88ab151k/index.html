@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.jpg">
+  <link rel="mask-icon" href="/favicon.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.cubestone.wang","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言在浏览B站时看了参考1中大佬的视频，很感兴趣。收集了一些信息后，发现资料不少且价格便宜，很适合改造，最终有了此项目。 硬件部分配件 大金空气传感器BRY88AB151K； ZE08-CH2O模块，USB Type-A公头； 1.3寸IIC单色OLED模块（我的是SH1106芯片的），2.54杜邦线插头，带4P的GH1.25mm公头的单头端子线，4P的GH1.25mm卧贴母座； 其它：撬棒、串口">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大金空气传感器BRY88AB151K改装">
+<meta property="og:url" content="https://blog.cubestone.wang/2023/05/21/bry88ab151k/index.html">
+<meta property="og:site_name" content="竹磊的博客">
+<meta property="og:description" content="前言在浏览B站时看了参考1中大佬的视频，很感兴趣。收集了一些信息后，发现资料不少且价格便宜，很适合改造，最终有了此项目。 硬件部分配件 大金空气传感器BRY88AB151K； ZE08-CH2O模块，USB Type-A公头； 1.3寸IIC单色OLED模块（我的是SH1106芯片的），2.54杜邦线插头，带4P的GH1.25mm公头的单头端子线，4P的GH1.25mm卧贴母座； 其它：撬棒、串口">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.cubestone.wang/2023/05/21/bry88ab151k/xiaoguo.jpeg">
+<meta property="og:image" content="https://blog.cubestone.wang/2023/05/21/bry88ab151k/zhuangtai.png">
+<meta property="og:image" content="https://blog.cubestone.wang/2023/05/21/bry88ab151k/lishizhuangtai.png">
+<meta property="article:published_time" content="2023-05-21T08:52:14.000Z">
+<meta property="article:modified_time" content="2023-12-30T18:21:59.522Z">
+<meta property="article:author" content="竹磊">
+<meta property="article:tag" content="硬件">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="开源">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.cubestone.wang/2023/05/21/bry88ab151k/xiaoguo.jpeg">
+
+
+<link rel="canonical" href="https://blog.cubestone.wang/2023/05/21/bry88ab151k/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2023/05/21/bry88ab151k/","path":"2023/05/21/bry88ab151k/","title":"大金空气传感器BRY88AB151K改装"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>大金空气传感器BRY88AB151K改装 | 竹磊的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">竹磊的博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E9%83%A8%E5%88%86"><span class="nav-number">2.</span> <span class="nav-text">硬件部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">配件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%86%E8%A7%A3"><span class="nav-number">2.2.</span> <span class="nav-text">拆解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%84%E8%A3%85"><span class="nav-number">2.3.</span> <span class="nav-text">组装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IO%E5%8F%A3%E5%8F%82%E8%80%83"><span class="nav-number">2.4.</span> <span class="nav-text">IO口参考</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E9%9D%A2%E6%9D%BF"><span class="nav-number">2.5.</span> <span class="nav-text">前面板</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E9%83%A8%E5%88%86"><span class="nav-number">3.</span> <span class="nav-text">软件部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">最终效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E6%9B%B2"><span class="nav-number">5.</span> <span class="nav-text">插曲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">竹磊</p>
+  <div class="site-description" itemprop="description">竹磊的博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2023/05/21/bry88ab151k/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="竹磊">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="竹磊的博客">
+      <meta itemprop="description" content="竹磊的博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="大金空气传感器BRY88AB151K改装 | 竹磊的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大金空气传感器BRY88AB151K改装
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-05-21 16:52:14" itemprop="dateCreated datePublished" datetime="2023-05-21T16:52:14+08:00">2023-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-12-31 02:21:59" itemprop="dateModified" datetime="2023-12-31T02:21:59+08:00">2023-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A1%AC%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">硬件</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在浏览B站时看了参考1中大佬的视频，很感兴趣。收集了一些信息后，发现资料不少且价格便宜，很适合改造，最终有了此项目。</p>
+<h3 id="硬件部分"><a href="#硬件部分" class="headerlink" title="硬件部分"></a>硬件部分</h3><h4 id="配件"><a href="#配件" class="headerlink" title="配件"></a>配件</h4><ol>
+<li>大金空气传感器BRY88AB151K；</li>
+<li>ZE08-CH2O模块，USB Type-A公头；</li>
+<li>1.3寸IIC单色OLED模块（我的是SH1106芯片的），2.54杜邦线插头，带4P的GH1.25mm公头的单头端子线，4P的GH1.25mm卧贴母座；</li>
+<li>其它：撬棒、串口转USB模块、电烙铁等辅助工具。</li>
+</ol>
+<span id="more"></span>
+
+<h4 id="拆解"><a href="#拆解" class="headerlink" title="拆解"></a>拆解</h4><ol>
+<li>参考视频中的方法用撬棒拆开前面板模块，拔下排线，取出主板；</li>
+<li>用刀片慢慢嵌入前面板，划开，小心取下面板；</li>
+<li>参考OLED模块尺寸在前面板模块的底板部分开孔。</li>
+</ol>
+<h4 id="组装"><a href="#组装" class="headerlink" title="组装"></a>组装</h4><ol>
+<li>将ZE08-CH2O模块附赠的排线与USB Type-A公头焊接在一起，接线顺序参考大金空气传感器USB小板上的标识，很容易确认；</li>
+<li>取一条带4P的GH1.25mm公头的单头端子线，将头取下只用其排线，将排线按序焊接到4P的GH1.25mm卧贴母座上（吐槽一下，器件太小，焊的我眼快瞎了），将另外一条单头端子线与焊好的排线并线接入2.54杜邦线插头中并压紧即可，接线顺序可以通过万用表电阻档测量ESP32模块GPIO22 、GPIO23、GND等确定，也可以参考PM2005 Datasheet确定；</li>
+<li>将下文中打印的面板与OLED模块贴合（提示：先点亮屏幕再贴合比较好确定位置），然后穿过提前开的孔后与前面板模块用双面胶贴合。</li>
+</ol>
+<h4 id="IO口参考"><a href="#IO口参考" class="headerlink" title="IO口参考"></a>IO口参考</h4><ol>
+<li>参考GitHub大佬所示，确定下载串口接线，确定GPIO0；</li>
+<li>LED：wifi-GPIO25、pm25-GPIO33、 co2-GPIO4、 tvoc-GPIO32、 内部-GPIO26；</li>
+<li>HDC1080、SGP30的IIC接口：SDA-GPIO19、SCL-GPIO21；</li>
+<li>PM2005、OLED屏幕的IIC接口：SDA-GPIO23、SCL-GPIO22；</li>
+<li>CM1106的UART接口：RX-GPIO16、TX-GPIO17；</li>
+<li>ZE08-CH2O的UART接口：RX-GPIO5、TX-GPIO18；</li>
+<li>背面按钮：GPIO34。</li>
+</ol>
+<h4 id="前面板"><a href="#前面板" class="headerlink" title="前面板"></a>前面板</h4><p>参照我在立创开源硬件平台上的<a target="_blank" rel="noopener" href="https://oshwhub.com/wang1993/BRY88AB151K_gai-zhuang-mian-ban">工程</a>，在嘉立创打印即可。</p>
+<h3 id="软件部分"><a href="#软件部分" class="headerlink" title="软件部分"></a>软件部分</h3><p>按格式读取各传感器数据并显示在屏幕上，同时将数据发送到局域网内的Influxdb上保存。详细过程参见<a target="_blank" rel="noopener" href="https://github.com/WangLei1993/BRY88AB151K">代码</a>，并不复杂，部分有待改进，仅供参考使用。</p>
+<p>注：</p>
+<ol>
+<li>代码基于PlatformIO上的IDF版创建，需要在VS Code上添加相应的插件后编译使用；</li>
+<li>代码中写死了部分个人的配置，如WIFI、Influxdb的相关信息，需要修改。但都提到了相对应的配置类中，很好改的；</li>
+<li>初次使用请在初始化后wifi连接前添加休眠代码，以便有时间连按三下按钮，重置存储中的配置。</li>
+</ol>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><img src="/2023/05/21/bry88ab151k/xiaoguo.jpeg" class="" title="实际效果">
+<img src="/2023/05/21/bry88ab151k/zhuangtai.png" class="" title="Grafana状态">
+<img src="/2023/05/21/bry88ab151k/lishizhuangtai.png" class="" title="Grafana历史数据">
+
+<h3 id="插曲"><a href="#插曲" class="headerlink" title="插曲"></a>插曲</h3><ol>
+<li>在使用u8g2测试OLED屏幕的时候，字体库中包含特殊字符<code>₂</code>(\u2082)，但是在Arduino环境下始终无法显示，后更换到我的IDF工程中却可以正常显示。经过一番折腾，查明Arduino环境下载的u8g2库最新版是2022年发布的v2.33.15版，而我的IDF工程中引入的是github上的最新版，在作者的<a target="_blank" rel="noopener" href="https://github.com/olikraus/u8g2/blob/master/ChangeLog#L314">ChangeLog</a>中有说明对这个区的字符支持。之后将最新版替换Arduino的库版本后，却在默认配置下报编译错误。经过源码查看，发现问题，最终以创建<a target="_blank" rel="noopener" href="https://github.com/olikraus/u8g2/pull/2176">PR</a>并被作者接受结束此事。</li>
+<li>在使用嘉立创EDA专业版设计新面板的时候更新至v2.0.26版本，结果2D及3D预览无法打开。在晚上提交反馈后，嘉立创的工作人员第二天一早就电话回访及提供上一个版本供临时使用，并最终在18号的v2.0.28版中修复BUG。</li>
+</ol>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1PY4y1y7sE">B站大佬视频</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/louliangsheng/daikin-air-sensor">GitHub大佬项目</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/">ESP-IDF 编程指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.gassensor.com.cn/Product_files/Specifications/CM1106-C%20Single%20Beam%20NDIR%20CO2%20Sensor%20Module%20Specification.pdf">CM1106 Datasheet</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ti.com.cn/cn/lit/ds/symlink/hdc1080.pdf?ts=1684660847408&ref_url=https%253A%252F%252Fwww.ti.com.cn%252Fproduct%252Fcn%252FHDC1080">HDC1080 Datasheet</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.devicemart.co.kr/goods/download?id=1232648&rank=1">PM2005 Datasheet</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.findic.com/doc/browser/mQGgB33nQ?doc_id=124895733#locale=zh-CN">SGP30 Datasheet</a></li>
+<li><a target="_blank" rel="noopener" href="http://style.winsensor.com/pro_pdf/ZE08-CH2O.pdf">ZE08-CH2O Datasheet</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%A1%AC%E4%BB%B6/" rel="tag"># 硬件</a>
+              <a href="/tags/ESP32/" rel="tag"># ESP32</a>
+              <a href="/tags/%E5%BC%80%E6%BA%90/" rel="tag"># 开源</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/20/suibi/" rel="prev" title="随笔">
+                  <i class="fa fa-angle-left"></i> 随笔
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/12/21/hg6145d2/" rel="next" title="光猫HG6145D2改造">
+                  光猫HG6145D2改造 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2016 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">竹磊</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
