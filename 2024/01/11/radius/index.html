@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.jpg">
+  <link rel="mask-icon" href="/favicon.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.cubestone.wang","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="起因家中的WiFi很早前已被笔者分成了多个网络进行隔离，包括主网络供自己用，设备网络供智能设备用，访客网络供朋友用，测试网络供测试一些服务时使用。其中访客网路同样也是采用WAP2-PSK方式，但是一旦要换密码，应用时就会造成同AP上的其他网络中断，且也不方便利用程序定时更换。最近在考虑了一段时间后，决定采用企业级使用的RADIUS认证方式以实现需求。 分析既然要使用RADIUS，那么必然离不开大名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有关RADIUS如何部署的探究">
+<meta property="og:url" content="https://blog.cubestone.wang/2024/01/11/radius/index.html">
+<meta property="og:site_name" content="竹磊的博客">
+<meta property="og:description" content="起因家中的WiFi很早前已被笔者分成了多个网络进行隔离，包括主网络供自己用，设备网络供智能设备用，访客网络供朋友用，测试网络供测试一些服务时使用。其中访客网路同样也是采用WAP2-PSK方式，但是一旦要换密码，应用时就会造成同AP上的其他网络中断，且也不方便利用程序定时更换。最近在考虑了一段时间后，决定采用企业级使用的RADIUS认证方式以实现需求。 分析既然要使用RADIUS，那么必然离不开大名">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-11T02:28:44.000Z">
+<meta property="article:modified_time" content="2024-01-11T07:50:31.310Z">
+<meta property="article:author" content="竹磊">
+<meta property="article:tag" content="软件">
+<meta property="article:tag" content="RADIUS">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.cubestone.wang/2024/01/11/radius/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2024/01/11/radius/","path":"2024/01/11/radius/","title":"有关RADIUS如何部署的探究"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>有关RADIUS如何部署的探究 | 竹磊的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">竹磊的博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%BE%E5%A3%B0"><span class="nav-number">5.</span> <span class="nav-text">尾声</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">竹磊</p>
+  <div class="site-description" itemprop="description">竹磊的博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2024/01/11/radius/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="竹磊">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="竹磊的博客">
+      <meta itemprop="description" content="竹磊的博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="有关RADIUS如何部署的探究 | 竹磊的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          有关RADIUS如何部署的探究
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-01-11 10:28:44 / 修改时间：15:50:31" itemprop="dateCreated datePublished" datetime="2024-01-11T10:28:44+08:00">2024-01-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%BD%AF%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">软件</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>家中的WiFi很早前已被笔者分成了多个网络进行隔离，包括主网络供自己用，设备网络供智能设备用，访客网络供朋友用，测试网络供测试一些服务时使用。其中访客网路同样也是采用<code>WAP2-PSK</code>方式，但是一旦要换密码，应用时就会造成同AP上的其他网络中断，且也不方便利用程序定时更换。最近在考虑了一段时间后，决定采用企业级使用的RADIUS认证方式以实现需求。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>既然要使用RADIUS，那么必然离不开大名鼎鼎的软件FreeRADIUS，恰好笔者的主路由器是OpenWrt也支持其部署，那就没有问题只待安装配置了。接着考虑安全性和兼容性，在参考了一些文章后，最终决定采用<code>PEAP-MSCHAPv2</code>认证方式进行部署。至于用户名和密码，则采用最基础的文件方式进行配置，这样只要定时用代码生成对应格式的文件再重启FreeRADIUS即可达到密码轮换的目的。</p>
+<span id="more"></span>
+
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><p>在AP上配置非常简单，笔者用的是dd-wrt，安全模式选择<code>WAP2-EAP</code>，WPA算法选择<code>CCMP-128(AES)</code>，接着配置RADIUS服务器地址、端口、共享密钥就行。</p>
+<p>在FreeRADIUS上配置则略显繁琐。首先在OpenWrt上安装<code>freeradius3-default</code>、<code>freeradius3-utils</code>两个包。接着进行配置，大部分采用默认值即可，相关涉及的配置如下：</p>
+<p>&#x2F;etc&#x2F;freeradius3&#x2F;radiusd.conf：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">prefix = /usr</span><br><span class="line">exec_prefix = /usr</span><br><span class="line">sysconfdir = /etc</span><br><span class="line">localstatedir = /var</span><br><span class="line">sbindir = /usr/sbin</span><br><span class="line">logdir = /var/log</span><br><span class="line">raddbdir = /etc/freeradius3</span><br><span class="line">radacctdir = /var/db/radacct</span><br><span class="line">name = radiusd</span><br><span class="line">confdir = $&#123;raddbdir&#125;</span><br><span class="line">modconfdir = $&#123;confdir&#125;/mods-config</span><br><span class="line">certdir = $&#123;confdir&#125;/certs</span><br><span class="line">cadir   = $&#123;confdir&#125;/certs</span><br><span class="line">run_dir = $&#123;localstatedir&#125;/run/$&#123;name&#125;</span><br><span class="line">db_dir = $&#123;raddbdir&#125;</span><br><span class="line">libdir = /usr/lib/freeradius3</span><br><span class="line">pidfile = $&#123;run_dir&#125;/$&#123;name&#125;.pid</span><br><span class="line">correct_escapes = true</span><br><span class="line">max_request_time = 30</span><br><span class="line">cleanup_delay = 5</span><br><span class="line">max_requests = 16384</span><br><span class="line">hostname_lookups = no</span><br><span class="line"></span><br><span class="line">log &#123;</span><br><span class="line">	destination = files</span><br><span class="line">	colourise = yes</span><br><span class="line">	file = $&#123;logdir&#125;/radius.log</span><br><span class="line">	syslog_facility = daemon</span><br><span class="line">	stripped_names = no</span><br><span class="line">	auth = no</span><br><span class="line">	auth_badpass = no</span><br><span class="line">	auth_goodpass = no</span><br><span class="line">	msg_denied = &quot;You are already logged in - access denied&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">checkrad = $&#123;sbindir&#125;/checkrad</span><br><span class="line"></span><br><span class="line">ENV &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">security &#123;</span><br><span class="line">	allow_core_dumps = no</span><br><span class="line">	max_attributes = 200</span><br><span class="line">	reject_delay = 1</span><br><span class="line">	status_server = yes</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">proxy_requests  = no</span><br><span class="line"></span><br><span class="line">$INCLUDE clients.conf</span><br><span class="line"></span><br><span class="line">thread pool &#123;</span><br><span class="line">	start_servers = 1</span><br><span class="line">	max_servers = 3</span><br><span class="line">	min_spare_servers = 1</span><br><span class="line">	max_spare_servers = 3</span><br><span class="line">	max_requests_per_server = 0</span><br><span class="line">	auto_limit_acct = no</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">modules &#123;</span><br><span class="line">	$INCLUDE mods-enabled/</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">instantiate &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">policy &#123;</span><br><span class="line">	$INCLUDE policy.d/</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$INCLUDE sites-enabled/</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;freeradius3&#x2F;sites-enabled&#x2F;default：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">server default &#123;</span><br><span class="line">	listen &#123;</span><br><span class="line">		type = auth</span><br><span class="line">		ipaddr = 172.16.xxx.1</span><br><span class="line">		port = 0</span><br><span class="line">		limit &#123;</span><br><span class="line">			max_connections = 16</span><br><span class="line">			lifetime = 0</span><br><span class="line">			idle_timeout = 30</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	authorize &#123;</span><br><span class="line">		filter_username</span><br><span class="line">		preprocess</span><br><span class="line">		eap &#123;</span><br><span class="line">			ok = return</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	authenticate &#123;</span><br><span class="line">		eap</span><br><span class="line">	&#125;</span><br><span class="line">	post-auth &#123;</span><br><span class="line">		if (session-state:User-Name &amp;&amp; reply:User-Name &amp;&amp; request:User-Name &amp;&amp; (reply:User-Name == request:User-Name)) &#123;</span><br><span class="line">			update reply &#123;</span><br><span class="line">				&amp;User-Name !* ANY</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		update &#123;</span><br><span class="line">			&amp;reply: += &amp;session-state:</span><br><span class="line">		&#125;</span><br><span class="line">		remove_reply_message_if_eap</span><br><span class="line">		Post-Auth-Type REJECT &#123;</span><br><span class="line">			attr_filter.access_reject</span><br><span class="line">			eap</span><br><span class="line">			remove_reply_message_if_eap</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;freeradius3&#x2F;sites-enabled&#x2F;inner-tunnel：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">server inner-tunnel &#123;</span><br><span class="line">	authorize &#123;</span><br><span class="line">		eap &#123;</span><br><span class="line">			ok = return</span><br><span class="line">		&#125;</span><br><span class="line">		files</span><br><span class="line">	&#125;</span><br><span class="line">	authenticate &#123;</span><br><span class="line">		Auth-Type MS-CHAP &#123;</span><br><span class="line">			mschap</span><br><span class="line">		&#125;</span><br><span class="line">		eap</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;freeradius3&#x2F;clients.conf：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">client ap &#123;</span><br><span class="line">	ipaddr		= 172.16.xxx.1/24</span><br><span class="line">	secret		= xxxxxxxx</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;freeradius3&#x2F;mods-enabled&#x2F;eap：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">eap &#123;</span><br><span class="line">	default_eap_type = peap</span><br><span class="line">	timer_expire = 60</span><br><span class="line">	ignore_unknown_eap_types = no</span><br><span class="line">	cisco_accounting_username_bug = no</span><br><span class="line">	max_sessions = $&#123;max_requests&#125;</span><br><span class="line">	tls-config tls-common &#123;</span><br><span class="line">		private_key_password = whatever</span><br><span class="line">		private_key_file = $&#123;certdir&#125;/server.pem</span><br><span class="line">		certificate_file = $&#123;certdir&#125;/server.pem</span><br><span class="line">		ca_file = $&#123;cadir&#125;/ca.pem</span><br><span class="line">		dh_file = $&#123;certdir&#125;/dh</span><br><span class="line">		ca_path = $&#123;cadir&#125;</span><br><span class="line">		cipher_list = &quot;DEFAULT&quot;</span><br><span class="line">		cipher_server_preference = no</span><br><span class="line">		tls_min_version = &quot;1.0&quot;</span><br><span class="line">		tls_max_version = &quot;1.3&quot;</span><br><span class="line">		ecdh_curve = &quot;prime256v1&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	peap &#123;</span><br><span class="line">		tls = tls-common</span><br><span class="line">		default_eap_type = mschapv2</span><br><span class="line">		copy_request_to_tunnel = no</span><br><span class="line">		use_tunneled_reply = no</span><br><span class="line">		virtual_server = &quot;inner-tunnel&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	mschapv2 &#123;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;freeradius3&#x2F;mods-enabled&#x2F;files：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Guest Cleartext-Password := &quot;TEST&quot;</span><br><span class="line">      Reply-Message := &quot;Hello, %&#123;User-Name&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>在目录<code>/etc/freeradius3/mods-enabled</code>保留如下文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">always</span><br><span class="line">attr_filter  </span><br><span class="line">eap          </span><br><span class="line">files        </span><br><span class="line">mschap       </span><br><span class="line">preprocess</span><br></pre></td></tr></table></figure>
+
+<p>配置成功后，用Python写了段代码，用于定时生成对应格式的文件，并重启FreeRADIUS服务。主要代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    file_path = <span class="string">&quot;/etc/freeradius3/mods-config/files/authorize&quot;</span></span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(file_path, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.truncate(<span class="number">0</span>)</span><br><span class="line">        f.seek(<span class="number">0</span>)</span><br><span class="line">        today = datetime.date.today()</span><br><span class="line">        username = <span class="string">&quot;USERNAME&quot;</span></span><br><span class="line">        password = <span class="string">&quot;PASSWORD&#123;&#125;&quot;</span>.<span class="built_in">format</span>(today.strftime(<span class="string">&quot;%m%d&quot;</span>))</span><br><span class="line">        f.write(<span class="string">&#x27;&#123;username&#125;	Cleartext-Password := &quot;&#123;password&#125;&quot;\n&#x27;</span>.<span class="built_in">format</span>(username=username, password=password))</span><br><span class="line">        f.write(<span class="string">&#x27;		Reply-Message := &quot;Hello, %&#123;User-Name&#125;&quot;\n&#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">            username = <span class="string">&quot;USERNAME-&#123;&#125;&quot;</span>.<span class="built_in">format</span>((today + datetime.timedelta(days=-i)).strftime(<span class="string">&quot;%m%d&quot;</span>))</span><br><span class="line">            password = <span class="string">&quot;PASSWORD-&#123;&#125;&quot;</span>.<span class="built_in">format</span>((today + datetime.timedelta(days=-i)).strftime(<span class="string">&quot;%m%d&quot;</span>))</span><br><span class="line">            f.write(<span class="string">&#x27;&#123;username&#125;	Cleartext-Password := &quot;&#123;password&#125;&quot;\n&#x27;</span>.<span class="built_in">format</span>(username=username, password=password))</span><br><span class="line">            f.write(<span class="string">&#x27;		Reply-Message := &quot;Hello, %&#123;User-Name&#125;&quot;\n&#x27;</span>)</span><br><span class="line">    subprocess.run(<span class="string">&quot;/etc/init.d/radiusd restart&quot;</span>, shell=<span class="literal">True</span>, check=<span class="literal">True</span>)</span><br><span class="line">    _LOGGER.info(<span class="string">&quot;success&quot;</span>)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    _LOGGER.exception(e)</span><br></pre></td></tr></table></figure>
+
+<p>其密码更换策略目前为主密码一天一换，次密码保留一周，一周后过期。</p>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>笔者手头上有的安卓手机（魅族）、iPad、Win10笔记本均成功的以该种方式连上了WiFi，证明配置基本完成。其中安卓手机选择添加网络后，再选择<code>802.x EAP</code>，EAP方法选择<code>PEAP</code>，阶段二身份验证选择<code>MSCHAPV2</code>，输入密码和身份即可连接。而iPad添加网络时安全性选择<code>WPA2企业级</code>，然后输入用户名、密码就行。针对Win10笔记本，配置就略显繁琐，具体的可以参见参考一节的链接文章，按详细步骤操作即可。</p>
+<h3 id="尾声"><a href="#尾声" class="headerlink" title="尾声"></a>尾声</h3><p>查阅相关资料发现，虽然在2020年6月二维码最著名的zxing库已经添加了该种方式的WiFi二维码格式，但是在2023年12月发布的WPA3 3.2规范第7章中并没有相关说明，所以各设备厂商对其的支持有待考证。就笔者手头上的几台旧设备而言，并不支持直接生成对应的WiFi二维码，且扫描按格式生成的二维码时，也不能成功连接对应的WiFi。</p>
+<p>笔者手上的部分设备较老，故TLS最低版本只能配到1.0，即<code>tls_min_version = &quot;1.0&quot;</code>，虽然在日志中看到了警告，但也没有别的办法了。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://www3.uwsp.edu/infotech/Pages/Tutorials/Wireless/Windows-10-Wireless-Setup.aspx">Windows 10 Wireless Setup</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zxing/zxing/wiki/Barcode-Contents#wi-fi-network-config-android-ios-11">zxing的Wi-Fi Network config (Android, iOS 11+)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.wi-fi.org/system/files/WPA3%20Specification%20v3.2.pdf">WPA3 Specification v3.2.pdf</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag"># 软件</a>
+              <a href="/tags/RADIUS/" rel="tag"># RADIUS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/10/git-question/" rel="prev" title="关于在Git中使用代理的探究">
+                  <i class="fa fa-angle-left"></i> 关于在Git中使用代理的探究
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2016 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">竹磊</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
