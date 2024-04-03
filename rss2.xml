@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>竹磊的博客</title>
+    <link>https://blog.cubestone.wang/</link>
+    
+    <image>
+      <url>https://blog.cubestone.wang/icon.png</url>
+      <title>竹磊的博客</title>
+      <link>https://blog.cubestone.wang/</link>
+    </image>
+    
+    <atom:link href="https://blog.cubestone.wang/rss2.xml" rel="self" type="application/rss+xml"/>
+    
+    <description>竹磊的博客</description>
+    <pubDate>Thu, 11 Jan 2024 07:50:31 GMT</pubDate>
+    <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>有关RADIUS如何部署的探究</title>
+      <link>https://blog.cubestone.wang/2024/01/11/radius/</link>
+      <guid>https://blog.cubestone.wang/2024/01/11/radius/</guid>
+      <pubDate>Thu, 11 Jan 2024 02:28:44 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;家中的WiFi很早前已被笔者分成了多个网络进行隔离，包括主网络供自己用，设备网络供智能设备用，访客网络供朋友用，测试网络供测试一些服务时使用。其中访客网路同样也是采用&lt;code&gt;WAP2-PSK&lt;/code&gt;方式，但是一旦要换密码，应用时就会造成同AP上的其他网络中断，且也不方便利用程序定时更换。最近在考虑了一段时间后，决定采用企业级使用的RADIUS认证方式以实现需求。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;既然要使用RADIUS，那么必然离不开大名鼎鼎的软件FreeRADIUS，恰好笔者的主路由器是OpenWrt也支持其部署，那就没有问题只待安装配置了。接着考虑安全性和兼容性，在参考了一些文章后，最终决定采用&lt;code&gt;PEAP-MSCHAPv2&lt;/code&gt;认证方式进行部署。至于用户名和密码，则采用最基础的文件方式进行配置，这样只要定时用代码生成对应格式的文件再重启FreeRADIUS即可达到密码轮换的目的。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/RADIUS/">RADIUS</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2024/01/11/radius/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>关于在Git中使用代理的探究</title>
+      <link>https://blog.cubestone.wang/2024/01/10/git-question/</link>
+      <guid>https://blog.cubestone.wang/2024/01/10/git-question/</guid>
+      <pubDate>Wed, 10 Jan 2024 10:28:44 GMT</pubDate>
+      
+      <description>&lt;p&gt;在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有&lt;code&gt;http.proxy&lt;/code&gt;这一个配置，而没有很多博文中提到的&lt;code&gt;https.proxy&lt;/code&gt;这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有&lt;code&gt;http.proxy&lt;/code&gt;，那必然也有&lt;code&gt;https.proxy&lt;/code&gt;，以致误导读者。因此建议在进行类似配置时，最好还是去查询一下官方的文档为好。至于具体如何设置，可以参照参考1、2中的链接，在此不再赘述。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/Git/">Git</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2024/01/10/git-question/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>关于在exFAT中使用软链接的问题探究</title>
+      <link>https://blog.cubestone.wang/2024/01/10/exfat_question/</link>
+      <guid>https://blog.cubestone.wang/2024/01/10/exfat_question/</guid>
+      <pubDate>Wed, 10 Jan 2024 08:36:44 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;在路由器上通过挂载U盘跑了一些程序，但是U盘没两天就频繁掉盘不识别，于是换了个质量好的U盘，将所有文件通过Win10复制了再挂载去执行，但是此时很多却无法启动了，又换回原U盘，此时正常启动。经过排查，发现是U盘中软链接失效的问题，在路由器上通过Shell修复新U盘上对应的几个软链接后，事情解决。但是此时为什么通过Win10复制文件会造成软链接失效的原因，引起了我探究的好奇。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;首先确定一点，U盘是exFAT格式，在查询了相关规范后发现其标准并不支持软链接这一操作。所以经Win10复制后，软链接失效是没有问题的。之所以路由器在exFAT上支持软链接，想必是其实现模块在标准上做了一些扩展支持。于是接着往下找路由器相关的问题。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/exFAT/">exFAT</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2024/01/10/exfat_question/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>如何在ESP32中使用mDNS（mDNS系列4）</title>
+      <link>https://blog.cubestone.wang/2024/01/02/mdns-question-four/</link>
+      <guid>https://blog.cubestone.wang/2024/01/02/mdns-question-four/</guid>
+      <pubDate>Mon, 01 Jan 2024 16:00:00 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;笔者的很多服务都启用了mDNS，因此在使用ESP32做一些小制作时，需要使用mDNS来获取服务地址，如&lt;code&gt;mqtt.local&lt;/code&gt;、&lt;code&gt;influxdb.local&lt;/code&gt;等，故有了本文中的代码。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;mDNS组件在IDF v5.0大版本中被移除出默认的内部组件库中（详见参考1），因此需要修改之前的基础库代码，手动添加对应支持。在PlatformIO项目中，我将官方的源码下载到了本地，放在了&lt;code&gt;third_party/mdns&lt;/code&gt;目录下，然后在最外层的CMakeLists.txt中添加了一行&lt;code&gt;list(APPEND EXTRA_COMPONENT_DIRS third_party)&lt;/code&gt;来让编译系统知道这个目录下的第三方组件。接着，在看了官方的文档和源码后（详见参考2、参考3），对相关代码进行了封装，形成了自己的库文件，具体实现见下方代码。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/mDNS/">mDNS</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2024/01/02/mdns-question-four/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>Linux ip6tables 学习</title>
+      <link>https://blog.cubestone.wang/2023/12/31/linux-ip6tables-study/</link>
+      <guid>https://blog.cubestone.wang/2023/12/31/linux-ip6tables-study/</guid>
+      <pubDate>Sun, 31 Dec 2023 02:38:25 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;自前几天改造了自己的光猫后，无意中发现为了访问，配的防火墙给的允许范围很大，这样的风险较高。经分析，只要允许ping及WireGuard的UDP流量通过即可满足我当前所有需求。于是将&lt;code&gt;ip6tables -A FORWARD_CUSTOM-j ACCEPT&lt;/code&gt;修改为了具体协议支持&lt;code&gt;ip6tables -A FORWARD_CUSTOM -p icmpv6 --icmpv6-type echo-request -j ACCEPT&lt;/code&gt;、&lt;code&gt;ip6tables -A FORWARD_CUSTOM -p udp --dport 10000 -j ACCEPT&lt;/code&gt;。但是前期因为忘记配置的是IPv6的防火墙，所以将ICMPv6协议写成了ICMP协议，可意外该命令被成功执行了。虽然因为协议错误导致没有达到放行目的，但是该错误却引起了我的好奇。为什么在IPv6的防火墙中，ICMP协议可以被成功执行？IPv6上运行的是ICMPv6协议，如果配置ICMP协议应该会被参数校验的时候校验出来的吧？&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/iptables/">iptables</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/ip6tables/">ip6tables</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2023/12/31/linux-ip6tables-study/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>Golang中的mDNS问题处理（mDNS系列3）</title>
+      <link>https://blog.cubestone.wang/2023/12/31/mdns-question-three/</link>
+      <guid>https://blog.cubestone.wang/2023/12/31/mdns-question-three/</guid>
+      <pubDate>Sat, 30 Dec 2023 18:09:33 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;为了在Windows上跨平台编译Linux上运行的Golang程序，选择了&lt;code&gt;CGO_ENABLED=0&lt;/code&gt;。此时DNS解析也被切换至了纯Go版本的解析器上，而这个版本的解析器不支持mDNS。为了方便我在自家使用mDNS，便有了下文的方案探究。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;首先查找了一些官方文档，发现官方明确短期内是不会在纯Go版本的解析器上支持mDNS的，具体详见参考1。为了通用，便想到了&lt;code&gt;monkey patch&lt;/code&gt;这一方式去处理，而这种在Python很好处理的方案，在Golang中却并不好写。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/mDNS/">mDNS</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2023/12/31/mdns-question-three/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>光猫HG6145D2改造</title>
+      <link>https://blog.cubestone.wang/2023/12/21/hg6145d2/</link>
+      <guid>https://blog.cubestone.wang/2023/12/21/hg6145d2/</guid>
+      <pubDate>Thu, 21 Dec 2023 15:38:14 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;在搬家后迁移联通的宽带，装维师傅给换了个光猫，换成了HG6145D2，然后之前好使的IPv6外网访问就失效了。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;查看路由器，IPv6地址可以正常分配。之后进入光猫后台，尝试一番后发现其防火墙功能残缺，无法像之前一样通过单独关闭IPv6防火墙或调整防火墙等级来实现IPv6外网访问。通过一番检索，了解到该款光猫可以通过指定网址来开启telnet，然后通过ip6tables命令来控制IPv6防火墙，从而实现IPv6外网访问。但是在之后的测试中却发现，光猫固件做的防范比较严格，没有找到可以利用的开机启动入口来实现控制固化。没办法，最终决定通过定时执行外部脚本来解决该问题。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/%E5%BC%80%E6%BA%90/">开源</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/%E5%85%89%E7%8C%AB/">光猫</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/HG6145D2/">HG6145D2</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2023/12/21/hg6145d2/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>Grafana新版本中的mDNS问题排查（mDNS系列2）</title>
+      <link>https://blog.cubestone.wang/2023/11/15/mdns-question-two/</link>
+      <guid>https://blog.cubestone.wang/2023/11/15/mdns-question-two/</guid>
+      <pubDate>Tue, 14 Nov 2023 18:09:22 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;近期将使用的Grafana的Docker镜像升级到了最新版本，却发现面板都报错了。在查找了一下后发现因为我数据源中的Host或URL字段都是使用的mDNS（.local）的域名，导致无法解析IP地址。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;因为我是在Grafana的Docker镜像的基础上经行了mDNS支持，Dockerfile如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight dockerfile&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;FROM&lt;/span&gt; grafana/grafana:latest-ubuntu&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;USER&lt;/span&gt; root&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;RUN&lt;/span&gt;&lt;span class=&quot;language-bash&quot;&gt; apt-get update &amp;amp;&amp;amp; apt-get install avahi-utils -y&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/mDNS/">mDNS</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2023/11/15/mdns-question-two/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>大金空气传感器BRY88AB151K改装</title>
+      <link>https://blog.cubestone.wang/2023/05/21/bry88ab151k/</link>
+      <guid>https://blog.cubestone.wang/2023/05/21/bry88ab151k/</guid>
+      <pubDate>Sun, 21 May 2023 08:52:14 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;在浏览B站时看了参考1中大佬的视频，很感兴趣。收集了一些信息后，发现资料不少且价格便宜，很适合改造，最终有了此项目。&lt;/p&gt;
+&lt;h3 id=&quot;硬件部分&quot;&gt;&lt;a href=&quot;#硬件部分&quot; class=&quot;headerlink&quot; title=&quot;硬件部分&quot;&gt;&lt;/a&gt;硬件部分&lt;/h3&gt;&lt;h4 id=&quot;配件&quot;&gt;&lt;a href=&quot;#配件&quot; class=&quot;headerlink&quot; title=&quot;配件&quot;&gt;&lt;/a&gt;配件&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;大金空气传感器BRY88AB151K；&lt;/li&gt;
+&lt;li&gt;ZE08-CH2O模块，USB Type-A公头；&lt;/li&gt;
+&lt;li&gt;1.3寸IIC单色OLED模块（我的是SH1106芯片的），2.54杜邦线插头，带4P的GH1.25mm公头的单头端子线，4P的GH1.25mm卧贴母座；&lt;/li&gt;
+&lt;li&gt;其它：撬棒、串口转USB模块、电烙铁等辅助工具。&lt;/li&gt;
+&lt;/ol&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E7%A1%AC%E4%BB%B6/">硬件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E7%A1%AC%E4%BB%B6/">硬件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/ESP32/">ESP32</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/%E5%BC%80%E6%BA%90/">开源</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2023/05/21/bry88ab151k/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>如何在Docker中使用mDNS（mDNS系列1）</title>
+      <link>https://blog.cubestone.wang/2022/12/11/mdns-question-one/</link>
+      <guid>https://blog.cubestone.wang/2022/12/11/mdns-question-one/</guid>
+      <pubDate>Sat, 10 Dec 2022 18:09:11 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;为了方便在自家局域网中发布自己由Docker启动的服务，故有了本文中所叙的解决方案，以作记录。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;该问题有两种解决方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Docker采用&lt;code&gt;macvlan&lt;/code&gt;网络发布服务，此时容器中拿到的是独立的IP，可以通过在容器内起完整的mDNS服务来发布地址。但是我的NAS及开发板等是使用WiFi联网的，而WiFi网络是不支持&lt;code&gt;macvlan&lt;/code&gt;的，故此方案不可行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;通过宿主机的IP发布服务，此时因已与宿主机耦合，故进一步可以利用宿主机上本来就在运行的&lt;code&gt;avahi-daemon&lt;/code&gt;来降低容器的资源消耗，经测试该方案可行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/mDNS/">mDNS</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2022/12/11/mdns-question-one/#disqus_thread</comments>
+      
+    </item>
+    
+  </channel>
+</rss>
