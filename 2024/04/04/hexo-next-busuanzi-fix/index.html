@@ -20,29 +20,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"blog.cubestone.wang","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="起因近期将使用的Grafana的Docker镜像升级到了最新版本，却发现面板都报错了。在查找了一下后发现因为我数据源中的Host或URL字段都是使用的mDNS（.local）的域名，导致无法解析IP地址。 分析因为我是在Grafana的Docker镜像的基础上经行了mDNS支持，Dockerfile如下： 123FROM grafana&#x2F;grafana:latest-ubuntuUSER root">
+    <meta name="description" content="起因今天在调整自己的博客的时候，启用了不蒜子的统计功能，但是发现统计数据异常，于是尝试最小代价修复问题。 分析经过一番Google，发现该问题早有人提出，并且已经有了修复方案，但是并不完美，在Safari上有硬伤。而巧合的是在今年初有人上线了Vercount服务，改进了不蒜子。但是如果要在Hexo中实现和不蒜子一样的效果，得动手改些代码。经过衡量，决定在启用NexT主题的不蒜子统计配置的基础上将不">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Grafana新版本中的mDNS问题排查（mDNS系列2）">
-<meta property="og:url" content="https://blog.cubestone.wang/2023/11/15/mdns-question-two/index.html">
+<meta property="og:title" content="在Hexo的NexT主题里不蒜子统计问题修复">
+<meta property="og:url" content="https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/index.html">
 <meta property="og:site_name" content="竹磊的博客">
-<meta property="og:description" content="起因近期将使用的Grafana的Docker镜像升级到了最新版本，却发现面板都报错了。在查找了一下后发现因为我数据源中的Host或URL字段都是使用的mDNS（.local）的域名，导致无法解析IP地址。 分析因为我是在Grafana的Docker镜像的基础上经行了mDNS支持，Dockerfile如下： 123FROM grafana&#x2F;grafana:latest-ubuntuUSER root">
+<meta property="og:description" content="起因今天在调整自己的博客的时候，启用了不蒜子的统计功能，但是发现统计数据异常，于是尝试最小代价修复问题。 分析经过一番Google，发现该问题早有人提出，并且已经有了修复方案，但是并不完美，在Safari上有硬伤。而巧合的是在今年初有人上线了Vercount服务，改进了不蒜子。但是如果要在Hexo中实现和不蒜子一样的效果，得动手改些代码。经过衡量，决定在启用NexT主题的不蒜子统计配置的基础上将不">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-11-14T18:09:22.000Z">
-<meta property="article:modified_time" content="2024-01-05T10:18:07.000Z">
+<meta property="article:published_time" content="2024-04-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-04T08:50:29.341Z">
 <meta property="article:author" content="竹磊">
 <meta property="article:tag" content="软件">
-<meta property="article:tag" content="mDNS">
+<meta property="article:tag" content="博客">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="NexT">
+<meta property="article:tag" content="不蒜子">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://blog.cubestone.wang/2023/11/15/mdns-question-two/">
+<link rel="canonical" href="https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2023/11/15/mdns-question-two/","path":"2023/11/15/mdns-question-two/","title":"Grafana新版本中的mDNS问题排查（mDNS系列2）"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/","path":"2024/04/04/hexo-next-busuanzi-fix/","title":"在Hexo的NexT主题里不蒜子统计问题修复"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Grafana新版本中的mDNS问题排查（mDNS系列2） | 竹磊的博客</title>
+<title>在Hexo的NexT主题里不蒜子统计问题修复 | 竹磊的博客</title>
   
 
 
@@ -116,7 +119,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">3.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -170,7 +173,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2023/11/15/mdns-question-two/">
+    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -183,12 +186,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Grafana新版本中的mDNS问题排查（mDNS系列2） | 竹磊的博客">
+      <meta itemprop="name" content="在Hexo的NexT主题里不蒜子统计问题修复 | 竹磊的博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Grafana新版本中的mDNS问题排查（mDNS系列2）
+          在Hexo的NexT主题里不蒜子统计问题修复
         </h1>
 
         <div class="post-meta-container">
@@ -198,15 +201,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2023-11-15 02:09:22" itemprop="dateCreated datePublished" datetime="2023-11-15T02:09:22+08:00">2023-11-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-01-05 18:18:07" itemprop="dateModified" datetime="2024-01-05T18:18:07+08:00">2024-01-05</time>
+      <time title="创建时间：2024-04-04 00:00:00 / 修改时间：16:50:29" itemprop="dateCreated datePublished" datetime="2024-04-04T00:00:00+08:00">2024-04-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -231,14 +228,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>625</span>
+      <span>321</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>1 分钟</span>
     </span>
 </div>
 
@@ -248,21 +245,21 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>近期将使用的Grafana的Docker镜像升级到了最新版本，却发现面板都报错了。在查找了一下后发现因为我数据源中的Host或URL字段都是使用的mDNS（.local）的域名，导致无法解析IP地址。</p>
-<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>因为我是在Grafana的Docker镜像的基础上经行了mDNS支持，Dockerfile如下：</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> grafana/grafana:latest-ubuntu</span><br><span class="line"><span class="keyword">USER</span> root</span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install avahi-utils -y</span></span><br></pre></td></tr></table></figure>
-
+    <div class="post-body" itemprop="articleBody"><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>今天在调整自己的博客的时候，启用了不蒜子的统计功能，但是发现统计数据异常，于是尝试最小代价修复问题。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>经过一番Google，发现该问题早有人提出，并且已经有了修复方案，但是并不完美，在Safari上有硬伤。而巧合的是在今年初有人上线了Vercount服务，改进了不蒜子。但是如果要在Hexo中实现和不蒜子一样的效果，得动手改些代码。经过衡量，决定在启用NexT主题的不蒜子统计配置的基础上将不蒜子代码修改为Vercount的代码。</p>
 <span id="more"></span>
 
-<p>注：使用时需要挂载<code>/run/avahi-daemon/socket</code></p>
-<p>所以首先进入了运行中的容器测试了一下mDNS本身是否可用，有没有因为系统的其他组件的问题导致无法使用。发现没有问题，使用<code>avahi-resolve-address</code>等命令时也可以得到正确的结果。（注：此时需要挂载<code>/var/run/dbus</code>）</p>
-<p>接着添加环境变量<code>GODEBUG=netdns=cgo+2</code>重新运行容器，看打印出的日志，发现也没有问题，grafana使用的也是cgo。（注：纯Go版本的解析器是不支持mDNS的）</p>
-<p>然后又用同版本的Golang编译了一个简单的Demo，放到了容器的环境下执行，发现同样可以解析mDNS，也没有问题。</p>
-<p>此时常规排查陷入了僵局，无奈只能去翻Grafana官方文档及相关源码。</p>
-<p>经过一番痛苦的排查后，终于发现了蛛丝马迹。原来Grafana在编译时使用的是基于<code>Alpine</code>镜像的Golang版本，且使用了参数<code>-ldflags &quot;-linkmode &#39;external&#39; -extldflags &#39;-static&#39;&quot;</code>，将库静态编译了进去，此时使用的libc是<code>musl libc</code>，而<code>musl libc</code>是不支持 NSS (Name Service Switch)的。接着将编译好的文件放到了基于<code>Ubuntu</code>的镜像中用于运行。所以即使运行环境是<code>gnu libc</code>，支持mDNS，但实际上Grafana使用的还是静态编译的<code>musl libc</code>，所以解析mDNS失败。</p>
-<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>知道了原因就有办法了，我选择了较为简单的一种。通过二分测试，找到了更改参数前的最后一个版本的Grafana，即<code>10.0.3</code>版本来使用，接着向官方提了Issue以期早日修复，具体详见参考1的链接。在刚发Issue后，官方就有了回复，但之后近两个多月没有其它动静。本文修改时（2024-01-05），发现有官方人于前几天认领了这个Issue，希望有所进展吧。</p>
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><p>修改<code>hexo-theme-next/layout/_third-party/statistics/busuanzi-counter.njk</code>文件为如下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;%- if theme.busuanzi_count.enable %&#125;</span><br><span class="line">  &lt;script defer src=&quot;https://vercount.one/js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&#123;%- endif %&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启用NexT配置中的<code>style: source/_data/styles.styl</code>，在文件中添加如下内容来覆盖默认行为：</p>
+<figure class="highlight styl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#busuanzi_container_page_pv</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: inline;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.busuanzi-count</span> <span class="selector-id">#busuanzi_container_site_uv</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: inline;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.busuanzi-count</span> <span class="selector-id">#busuanzi_container_site_pv</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: inline;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>数据统计恢复正常，但是目前有些小小的问题，即每次使用npm重新安装或更新依赖后需要手动修改<code>hexo-theme-next</code>中的源码。</p>
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
-<li><a target="_blank" rel="noopener" href="https://github.com/grafana/grafana/issues/77335">Data source: can’t lookup IP address when I use mDNS(.local) in URL or Host field</a></li>
+<li><a target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh-cn/latest/next/advanced/%E4%B8%8D%E8%92%9C%E5%AD%90-%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB%E6%AC%A1%E6%95%B0/">Hexo-NexT不蒜子配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/next-theme/hexo-theme-next/issues/136">不蒜子相关Issue</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EvanNotFound/vercount">Vercount网站计数器</a></li>
 </ol>
 
     </div>
@@ -281,7 +278,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://blog.cubestone.wang/2023/11/15/mdns-question-two/" title="Grafana新版本中的mDNS问题排查（mDNS系列2）">https://blog.cubestone.wang/2023/11/15/mdns-question-two/</a>
+      <a href="https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/" title="在Hexo的NexT主题里不蒜子统计问题修复">https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -291,21 +288,21 @@
 
           <div class="post-tags">
               <a href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag"># 软件</a>
-              <a href="/tags/mDNS/" rel="tag"># mDNS</a>
+              <a href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag"># 博客</a>
+              <a href="/tags/Hexo/" rel="tag"># Hexo</a>
+              <a href="/tags/NexT/" rel="tag"># NexT</a>
+              <a href="/tags/%E4%B8%8D%E8%92%9C%E5%AD%90/" rel="tag"># 不蒜子</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2023/05/21/bry88ab151k/" rel="prev" title="大金空气传感器BRY88AB151K改装">
-                  <i class="fa fa-angle-left"></i> 大金空气传感器BRY88AB151K改装
+                <a href="/2024/01/11/radius/" rel="prev" title="有关RADIUS如何部署的探究">
+                  <i class="fa fa-angle-left"></i> 有关RADIUS如何部署的探究
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2023/12/21/hg6145d2/" rel="next" title="光猫HG6145D2改造">
-                  光猫HG6145D2改造 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>

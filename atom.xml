@@ -6,7 +6,7 @@
   <link href="https://blog.cubestone.wang/atom.xml" rel="self"/>
   
   <link href="https://blog.cubestone.wang/"/>
-  <updated>2024-01-11T07:50:31.310Z</updated>
+  <updated>2024-04-04T08:50:29.341Z</updated>
   <id>https://blog.cubestone.wang/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>在Hexo的NexT主题里不蒜子统计问题修复</title>
+    <link href="https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/"/>
+    <id>https://blog.cubestone.wang/2024/04/04/hexo-next-busuanzi-fix/</id>
+    <published>2024-04-03T16:00:00.000Z</published>
+    <updated>2024-04-04T08:50:29.341Z</updated>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;今天在调整自己的博客的时候，启用了不蒜子的统计功能，但是发现统计数据异常，于是尝试最小代价修复问题。&lt;/p&gt;
+&lt;h3 id=&quot;分析&quot;&gt;&lt;a href=&quot;#分析&quot; class=&quot;headerlink&quot; title=&quot;分析&quot;&gt;&lt;/a&gt;分析&lt;/h3&gt;&lt;p&gt;经过一番Google，发现该问题早有人提出，并且已经有了修复方案，但是并不完美，在Safari上有硬伤。而巧合的是在今年初有人上线了Vercount服务，改进了不蒜子。但是如果要在Hexo中实现和不蒜子一样的效果，得动手改些代码。经过衡量，决定在启用NexT主题的不蒜子统计配置的基础上将不蒜子代码修改为Vercount的代码。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="软件" scheme="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/"/>
+    
+    
+    <category term="软件" scheme="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/"/>
+    
+    <category term="博客" scheme="https://blog.cubestone.wang/tags/%E5%8D%9A%E5%AE%A2/"/>
+    
+    <category term="Hexo" scheme="https://blog.cubestone.wang/tags/Hexo/"/>
+    
+    <category term="NexT" scheme="https://blog.cubestone.wang/tags/NexT/"/>
+    
+    <category term="不蒜子" scheme="https://blog.cubestone.wang/tags/%E4%B8%8D%E8%92%9C%E5%AD%90/"/>
+    
+  </entry>
   
   <entry>
     <title>有关RADIUS如何部署的探究</title>
