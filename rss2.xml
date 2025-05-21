@@ -15,8 +15,33 @@
     <atom:link href="https://blog.cubestone.wang/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>竹磊的博客</description>
-    <pubDate>Thu, 04 Apr 2024 08:50:29 GMT</pubDate>
+    <pubDate>Wed, 21 May 2025 03:14:57 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>光猫F7615UV3b外网访问设置</title>
+      <link>https://blog.cubestone.wang/2025/05/21/f7615uv3b/</link>
+      <guid>https://blog.cubestone.wang/2025/05/21/f7615uv3b/</guid>
+      <pubDate>Wed, 21 May 2025 01:44:23 GMT</pubDate>
+      
+      <description>&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;之前的300M包年纯宽带即将到期，在操作了一圈后，成功办理了78元低消送500M宽带的套餐。与装维沟通说本地还可以申请公网IP后，通过在线客服成功申请到了IPv4的动态公网IP。而IPv6的公网IP本身默认就是有的。&lt;/p&gt;</description>
+      
+      
+      
+      
+      <category domain="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      
+      <category domain="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/">软件</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/%E5%85%89%E7%8C%AB/">光猫</category>
+      
+      <category domain="https://blog.cubestone.wang/tags/F7615UV3b/">F7615UV3b</category>
+      
+      
+      <comments>https://blog.cubestone.wang/2025/05/21/f7615uv3b/#disqus_thread</comments>
+      
+    </item>
     
     <item>
       <title>在Hexo的NexT主题里不蒜子统计问题修复</title>
