@@ -20,28 +20,31 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"blog.cubestone.wang","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"tomorrow-night-bright"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":true,"color":"#222","save":"manual"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有http.proxy这一个配置，而没有很多博文中提到的https.proxy这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有http.proxy，那必然也有https.proxy">
+    <meta name="description" content="起因笔者近期在配置WSL中的开发测试环境。配置完成后查看监控图表时发现硬盘读操作的指标不太正常，统计显示每小时写不到200MiB的数据，但是读有近9GiB的数据，从次数看，写操作万次左右但是读操作却有三十万次上下。在和家中NAS上的统计数据比较后确认读操作数据确实不正常，且核实了配置的WSL中并没有什么异常程序在运行。由此，这一异常现象引起了笔者的探寻好奇心。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于在Git中使用代理的探究">
-<meta property="og:url" content="https://blog.cubestone.wang/2024/01/10/git-question/index.html">
+<meta property="og:title" content="全局配置中的autoMemoryReclaim参数影响（WSL系列1）">
+<meta property="og:url" content="https://blog.cubestone.wang/2026/04/19/wsl-one/index.html">
 <meta property="og:site_name" content="竹磊的博客">
-<meta property="og:description" content="在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有http.proxy这一个配置，而没有很多博文中提到的https.proxy这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有http.proxy，那必然也有https.proxy">
+<meta property="og:description" content="起因笔者近期在配置WSL中的开发测试环境。配置完成后查看监控图表时发现硬盘读操作的指标不太正常，统计显示每小时写不到200MiB的数据，但是读有近9GiB的数据，从次数看，写操作万次左右但是读操作却有三十万次上下。在和家中NAS上的统计数据比较后确认读操作数据确实不正常，且核实了配置的WSL中并没有什么异常程序在运行。由此，这一异常现象引起了笔者的探寻好奇心。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-01-10T10:28:44.000Z">
-<meta property="article:modified_time" content="2024-01-10T10:45:37.089Z">
+<meta property="og:image" content="https://blog.cubestone.wang/2026/04/19/wsl-one/disk-data.png">
+<meta property="og:image" content="https://blog.cubestone.wang/2026/04/19/wsl-one/memory-data.png">
+<meta property="article:published_time" content="2026-04-19T15:01:58.000Z">
+<meta property="article:modified_time" content="2026-04-21T13:36:59.732Z">
 <meta property="article:author" content="竹磊">
 <meta property="article:tag" content="软件">
-<meta property="article:tag" content="Git">
+<meta property="article:tag" content="WSL">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.cubestone.wang/2026/04/19/wsl-one/disk-data.png">
 
 
-<link rel="canonical" href="https://blog.cubestone.wang/2024/01/10/git-question/">
+<link rel="canonical" href="https://blog.cubestone.wang/2026/04/19/wsl-one/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2024/01/10/git-question/","path":"2024/01/10/git-question/","title":"关于在Git中使用代理的探究"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2026/04/19/wsl-one/","path":"2026/04/19/wsl-one/","title":"全局配置中的autoMemoryReclaim参数影响（WSL系列1）"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>关于在Git中使用代理的探究 | 竹磊的博客</title>
+<title>全局配置中的autoMemoryReclaim参数影响（WSL系列1） | 竹磊的博客</title>
   
 
 
@@ -133,7 +136,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -207,7 +210,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2024/01/10/git-question/">
+    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2026/04/19/wsl-one/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -220,12 +223,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="关于在Git中使用代理的探究 | 竹磊的博客">
+      <meta itemprop="name" content="全局配置中的autoMemoryReclaim参数影响（WSL系列1） | 竹磊的博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于在Git中使用代理的探究
+          全局配置中的autoMemoryReclaim参数影响（WSL系列1）
         </h1>
 
         <div class="post-meta-container">
@@ -235,9 +238,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-01-10 18:28:44 / 修改时间：18:45:37" itemprop="dateCreated datePublished" datetime="2024-01-10T18:28:44+08:00">2024-01-10</time>
+      <time title="创建时间：2026-04-19 23:01:58" itemprop="dateCreated datePublished" datetime="2026-04-19T23:01:58+08:00">2026-04-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-04-21 21:36:59" itemprop="dateModified" datetime="2026-04-21T21:36:59+08:00">2026-04-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -262,14 +271,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>215</span>
+      <span>978</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -279,12 +288,21 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有<code>http.proxy</code>这一个配置，而没有很多博文中提到的<code>https.proxy</code>这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有<code>http.proxy</code>，那必然也有<code>https.proxy</code>，以致误导读者。因此建议在进行类似配置时，最好还是去查询一下官方的文档为好。至于具体如何设置，可以参照参考1、2中的链接，在此不再赘述。</p>
+    <div class="post-body" itemprop="articleBody"><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>笔者近期在配置WSL中的开发测试环境。配置完成后查看监控图表时发现硬盘读操作的指标不太正常，统计显示每小时写不到200MiB的数据，但是读有近9GiB的数据，从次数看，写操作万次左右但是读操作却有三十万次上下。在和家中NAS上的统计数据比较后确认读操作数据确实不正常，且核实了配置的WSL中并没有什么异常程序在运行。由此，这一异常现象引起了笔者的探寻好奇心。</p>
 <span id="more"></span>
 
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>首先，WSL刚配置好，本身没有什么程序在运行，且和自己的NAS对比，NAS中跑了很多应用，读操作的指标数据都很低，没有WSL这么夸张。故排除了是应用程序的影响。再次，二者都跑着Ubuntu24.04，虽然NAS跑的是常规6.8的内核，WSL跑的是windows定制的6.6内核，但是二者的内核版本差距并不大，且笔者并没有改什么内核参数，基本都是默认值，总不能是微软定制内核的锅吧，故该因素放到最后排查。所以目光来到了什么情况下会触发频繁的读操作。</p>
+<p>经过一番查询，发现读同一段硬盘数据，基本只有第一次读操作会计入内核统计，之后只要是从缓存中读取，就不会计入内核统计。因此这指标的异常很可能与缓存有关，而缓存的话就要看内存中的数据分布了。通过<code>free -h</code>命令对比WSL和NAS，发现WSL中的缓存内存确实很少，但是我配给WSL了8G内存，不应该这么少的缓存啊，且经过搜索，发现在使用不紧张的情况下，内核的缓存策略应该会缓存大约四分之一内存的数据才对。故判断问题出现在了WSL上内核的缓存策略上。那么什么会影响内核的缓存策略呢，笔者想起了之前几天通过AI配置的WSL全局配置上来。</p>
+<p>查了配置文件中的信息，<code>autoMemoryReclaim</code>这个参数跳了出来。这个参数的说明详见参考[1]中的文档。简单来说就是<code>disabled</code>是禁用自动内存回收，<code>gradual</code>是缓存内存缓慢自动回收，<code>dropCache</code>是缓存内存立即回收，默认值是<code>dropCache</code>。而笔者的配置中这个参数的值是<code>gradual</code>。</p>
+<p>当我将配置从之前的<code>gradual</code>改为<code>disabled</code>并重启WSL后，硬盘读操作的指标恢复正常。从指标看，稳定后硬盘读操作从原来的每小时近9GiB降低到每小时不到100MiB，每小时读操作次数从三十万次上下下降到了百余次。</p>
+<img src="/2026/04/19/wsl-one/disk-data.png" class="" title="硬盘数据">
+
+<p>但此时WSL占用的内存在主机上看来增加了很多，从WSL中的缓存内存指标也可以看出，从原来的不到500MiB到更改后的近2GiB。</p>
+<img src="/2026/04/19/wsl-one/memory-data.png" class="" title="内存数据">
+
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>如果你的主机内存很紧张，可以开<code>gradual</code>甚至<code>dropCache</code>来尽快释放内存，但是这会导致WSL中缓存内存被清空，下次访问这些数据时需要重新从硬盘读取，这会导致硬盘读操作的指标异常。如果你的主机内存很充裕，就可以开<code>disabled</code>来禁用自动内存回收，这样缓存内存就不会被清空，缓解对硬盘的大量读操作。这些额外的读操作对硬盘的影响不大，但会轻微影响程序的响应速度。具体如何配置取决于你的实际需求。</p>
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
-<li><a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpproxy">Git有关代理的官方文档</a></li>
-<li><a target="_blank" rel="noopener" href="https://gist.github.com/laispace/666dd7b27e9116faece6">GitHub上的一个有关Git代理的讨论</a></li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/wsl/wsl-config#wslconfig">WSL全局配置的官方文档</a></li>
 </ol>
 
     </div>
@@ -303,7 +321,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://blog.cubestone.wang/2024/01/10/git-question/" title="关于在Git中使用代理的探究">https://blog.cubestone.wang/2024/01/10/git-question/</a>
+      <a href="https://blog.cubestone.wang/2026/04/19/wsl-one/" title="全局配置中的autoMemoryReclaim参数影响（WSL系列1）">https://blog.cubestone.wang/2026/04/19/wsl-one/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -313,21 +331,18 @@
 
           <div class="post-tags">
               <a href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag"># 软件</a>
-              <a href="/tags/Git/" rel="tag"># Git</a>
+              <a href="/tags/WSL/" rel="tag"># WSL</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/01/10/exfat_question/" rel="prev" title="关于在exFAT中使用软链接的问题探究">
-                  <i class="fa fa-angle-left"></i> 关于在exFAT中使用软链接的问题探究
+                <a href="/2025/05/21/f7615uv3b/" rel="prev" title="光猫F7615UV3b外网访问设置">
+                  <i class="fa fa-angle-left"></i> 光猫F7615UV3b外网访问设置
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/01/11/radius/" rel="next" title="有关RADIUS如何部署的探究">
-                  有关RADIUS如何部署的探究 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
