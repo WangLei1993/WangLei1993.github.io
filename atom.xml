@@ -6,7 +6,7 @@
   <link href="https://blog.cubestone.wang/atom.xml" rel="self"/>
   
   <link href="https://blog.cubestone.wang/"/>
-  <updated>2026-04-21T13:36:59.732Z</updated>
+  <updated>2026-04-28T19:14:30.431Z</updated>
   <id>https://blog.cubestone.wang/</id>
   
   <author>
@@ -15,6 +15,52 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>H3C TC2101调整分区（OpenIPC系列二）</title>
+    <link href="https://blog.cubestone.wang/2026/04/28/openipc-two/"/>
+    <id>https://blog.cubestone.wang/2026/04/28/openipc-two/</id>
+    <published>2026-04-27T16:44:00.000Z</published>
+    <updated>2026-04-28T19:14:30.431Z</updated>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;前文已经完成了设备的第一次刷机，但是除有线网络外，其它的外设均不能用，需要参考已有的SSC337版本进行适配或者手动测试找出对应引脚。因为之后涉及到自定义固件的编译，故需要先对设备的分区配置进行了解，以便之后的操作。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="软件" scheme="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/"/>
+    
+    
+    <category term="软件" scheme="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/"/>
+    
+    <category term="OpenIPC" scheme="https://blog.cubestone.wang/tags/OpenIPC/"/>
+    
+    <category term="H3C TC2101" scheme="https://blog.cubestone.wang/tags/H3C-TC2101/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>H3C TC2101刷机（OpenIPC系列一）</title>
+    <link href="https://blog.cubestone.wang/2026/04/27/openipc-one/"/>
+    <id>https://blog.cubestone.wang/2026/04/27/openipc-one/</id>
+    <published>2026-04-27T12:56:14.000Z</published>
+    <updated>2026-04-28T18:20:31.609Z</updated>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;起因&quot;&gt;&lt;a href=&quot;#起因&quot; class=&quot;headerlink&quot; title=&quot;起因&quot;&gt;&lt;/a&gt;起因&lt;/h3&gt;&lt;p&gt;最近在&lt;code&gt;什么值得买&lt;/code&gt;上刷到了一篇运营商的家用摄像头的文章，二手价格便宜还提到了能刷机。顺着文章的内容去看了看对应的开源项目&lt;code&gt;OpenIPC&lt;/code&gt;，觉得正好符合很久前自己想完全掌控摄像头的想法，而且该项目内容比较完善，刷机配置难度应该不大。故在&lt;code&gt;咸鱼&lt;/code&gt;上花了30大洋买了台二手的&lt;code&gt;H3C TC2101&lt;/code&gt;准备一试。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="软件" scheme="https://blog.cubestone.wang/categories/%E8%BD%AF%E4%BB%B6/"/>
+    
+    
+    <category term="软件" scheme="https://blog.cubestone.wang/tags/%E8%BD%AF%E4%BB%B6/"/>
+    
+    <category term="OpenIPC" scheme="https://blog.cubestone.wang/tags/OpenIPC/"/>
+    
+    <category term="H3C TC2101" scheme="https://blog.cubestone.wang/tags/H3C-TC2101/"/>
+    
+  </entry>
   
   <entry>
     <title>全局配置中的autoMemoryReclaim参数影响（WSL系列1）</title>
@@ -42,7 +88,7 @@
     <link href="https://blog.cubestone.wang/2025/05/21/f7615uv3b/"/>
     <id>https://blog.cubestone.wang/2025/05/21/f7615uv3b/</id>
     <published>2025-05-21T01:44:23.000Z</published>
-    <updated>2026-02-07T16:37:48.923Z</updated>
+    <updated>2026-04-28T02:53:29.594Z</updated>
     
     
     <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;之前的300M包年纯宽带即将到期，在操作了一圈后，成功办理了78元低消送500M宽带的套餐。与装维沟通说本地还可以申请公网IP后，通过在线客服成功申请到了IPv4的动态公网IP。而IPv6的公网IP本身默认就是有的。&lt;/p&gt;</summary>
@@ -274,7 +320,7 @@
     <link href="https://blog.cubestone.wang/2023/05/21/bry88ab151k/"/>
     <id>https://blog.cubestone.wang/2023/05/21/bry88ab151k/</id>
     <published>2023-05-21T08:52:14.000Z</published>
-    <updated>2023-12-30T18:21:59.522Z</updated>
+    <updated>2026-04-28T02:53:39.327Z</updated>
     
     
     <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;在浏览B站时看了参考1中大佬的视频，很感兴趣。收集了一些信息后，发现资料不少且价格便宜，很适合改造，最终有了此项目。&lt;/p&gt;

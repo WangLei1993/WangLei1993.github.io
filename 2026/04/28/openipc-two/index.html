@@ -20,28 +20,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"blog.cubestone.wang","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"tomorrow-night-bright"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":true,"color":"#222","save":"manual"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有http.proxy这一个配置，而没有很多博文中提到的https.proxy这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有http.proxy，那必然也有https.proxy">
+    <meta name="description" content="前言前文已经完成了设备的第一次刷机，但是除有线网络外，其它的外设均不能用，需要参考已有的SSC337版本进行适配或者手动测试找出对应引脚。因为之后涉及到自定义固件的编译，故需要先对设备的分区配置进行了解，以便之后的操作。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于在Git中使用代理的探究">
-<meta property="og:url" content="https://blog.cubestone.wang/2024/01/10/git-question/index.html">
+<meta property="og:title" content="H3C TC2101调整分区（OpenIPC系列二）">
+<meta property="og:url" content="https://blog.cubestone.wang/2026/04/28/openipc-two/index.html">
 <meta property="og:site_name" content="竹磊的博客">
-<meta property="og:description" content="在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有http.proxy这一个配置，而没有很多博文中提到的https.proxy这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有http.proxy，那必然也有https.proxy">
+<meta property="og:description" content="前言前文已经完成了设备的第一次刷机，但是除有线网络外，其它的外设均不能用，需要参考已有的SSC337版本进行适配或者手动测试找出对应引脚。因为之后涉及到自定义固件的编译，故需要先对设备的分区配置进行了解，以便之后的操作。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-01-10T10:28:44.000Z">
-<meta property="article:modified_time" content="2024-01-10T10:45:37.089Z">
+<meta property="article:published_time" content="2026-04-27T16:44:00.000Z">
+<meta property="article:modified_time" content="2026-04-28T19:14:30.431Z">
 <meta property="article:author" content="竹磊">
 <meta property="article:tag" content="软件">
-<meta property="article:tag" content="Git">
+<meta property="article:tag" content="OpenIPC">
+<meta property="article:tag" content="H3C TC2101">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://blog.cubestone.wang/2024/01/10/git-question/">
+<link rel="canonical" href="https://blog.cubestone.wang/2026/04/28/openipc-two/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2024/01/10/git-question/","path":"2024/01/10/git-question/","title":"关于在Git中使用代理的探究"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.cubestone.wang/2026/04/28/openipc-two/","path":"2026/04/28/openipc-two/","title":"H3C TC2101调整分区（OpenIPC系列二）"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>关于在Git中使用代理的探究 | 竹磊的博客</title>
+<title>H3C TC2101调整分区（OpenIPC系列二） | 竹磊的博客</title>
   
 
 
@@ -133,7 +134,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E6%95%B4"><span class="nav-number">3.</span> <span class="nav-text">调整</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -207,7 +208,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2024/01/10/git-question/">
+    <link itemprop="mainEntityOfPage" href="https://blog.cubestone.wang/2026/04/28/openipc-two/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -220,12 +221,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="关于在Git中使用代理的探究 | 竹磊的博客">
+      <meta itemprop="name" content="H3C TC2101调整分区（OpenIPC系列二） | 竹磊的博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于在Git中使用代理的探究
+          H3C TC2101调整分区（OpenIPC系列二）
         </h1>
 
         <div class="post-meta-container">
@@ -235,9 +236,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-01-10 18:28:44 / 修改时间：18:45:37" itemprop="dateCreated datePublished" datetime="2024-01-10T18:28:44+08:00">2024-01-10</time>
+      <time title="创建时间：2026-04-28 00:44:00" itemprop="dateCreated datePublished" datetime="2026-04-28T00:44:00+08:00">2026-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-04-29 03:14:30" itemprop="dateModified" datetime="2026-04-29T03:14:30+08:00">2026-04-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -262,14 +269,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>215</span>
+      <span>1.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -279,12 +286,45 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在使用Git推送到GitHub时发现连接不上，顺手查了一下如何设置代理，结果发现网上流传的设置方法有部分谬误。实际上只有<code>http.proxy</code>这一个配置，而没有很多博文中提到的<code>https.proxy</code>这个配置。究其原因，个人认为很可能与在Linux或者Windows中设置代理时可以分别设置HTTP、HTTPS的有关，所以很多文章想当然的认为Git有<code>http.proxy</code>，那必然也有<code>https.proxy</code>，以致误导读者。因此建议在进行类似配置时，最好还是去查询一下官方的文档为好。至于具体如何设置，可以参照参考1、2中的链接，在此不再赘述。</p>
+    <div class="post-body" itemprop="articleBody"><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前文已经完成了设备的第一次刷机，但是除有线网络外，其它的外设均不能用，需要参考已有的SSC337版本进行适配或者手动测试找出对应引脚。因为之后涉及到自定义固件的编译，故需要先对设备的分区配置进行了解，以便之后的操作。</p>
 <span id="more"></span>
 
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>因为Flash有16MiB，故第一次刷机笔者选取了Ultimate版本固件（关于Lite和Ultimate的区别详见参考链接）。在进入系统后，通过<code>cat /proc/mtd</code>命令查看分区信息，内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@openipc-ssc335:~# <span class="built_in">cat</span> /proc/mtd </span><br><span class="line">dev:    size   erasesize  name</span><br><span class="line">mtd0: 00040000 00010000 <span class="string">&quot;boot&quot;</span></span><br><span class="line">mtd1: 00010000 00010000 <span class="string">&quot;env&quot;</span></span><br><span class="line">mtd2: 00200000 00010000 <span class="string">&quot;kernel&quot;</span></span><br><span class="line">mtd3: 00800000 00010000 <span class="string">&quot;rootfs&quot;</span></span><br><span class="line">mtd4: 005b0000 00010000 <span class="string">&quot;rootfs_data&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到主要的kernel部分给了2MiB，rootfs部分给了8MiB。</p>
+<p>通过进一步搜索，发现官方有一个分区配置计算工具，但是针对Ultimate版本，16MiB的Flash给的计算结果是kernel部分给了3MiB，rootfs部分给了10MiB。这就很奇怪了，计算结果与实际固件不一致，官方的固件并没有采用这一分区配置。</p>
+<p>随后通过Binwalk分析固件，及参考U-Boot源码、打包脚本，发现如下的一些逻辑：</p>
+<ol>
+<li>官方指南中的固件env分区全为0xFF，而rootfs_data分区貌似为随机填充到指定长度的。</li>
+<li>刷机后第一次启动，因为env分区不对，故从U-Boot中加载默认配置，此时环境变量<code>rootmtd=5120k</code>，即rootfs分区大小配置为了5MiB。</li>
+<li>随后执行启动命令，初次执行<code>bootcmd=setenv bootcmd $&#123;cmdnor&#125;; sf probe 0; saveenv; run bootcmd</code>，由于U-Boot源码中动态探测，会重新计算rootfs分区大小，并更新到env分区中永久保存，此时<code>rootmtd=8192k</code>。</li>
+<li>内核启动，初始化rootfs_data这个overlay文件系统部分。</li>
+<li>第二次及之后的启动，执行的就是替换后的命令<code>bootcmd=sf probe 0; setenv setargs setenv bootargs $&#123;bootargs&#125;; run setargs; sf read $&#123;baseaddr&#125; $&#123;kernaddr&#125; $&#123;kernsize&#125;; bootm $&#123;baseaddr&#125;</code>，此时就没有<code>saveenv</code>命令了。</li>
+<li>现在如果手动修改了rootfs分区大小，比如再改回<code>rootmtd=5120k</code>，然后再重启，发现还能正常启动。这是由于U-Boot源码中的动态探测每次都会执行，但是因为没有执行<code>saveenv</code>命令，所以内存中已经修改<code>rootmtd=8192k</code>且传递给了kernel，其值却并没有保存到env分区。所以进系统后再看环境变量，<code>rootmtd</code>的值还是<code>5120k</code>，看Flash布局却是正确的。</li>
+<li>看环境变量<code>rootsize=0x500000</code>，一直不变，这是由于这个变量只在通过命令行升级时才会探测并更新为<code>rootsize=0x800000</code>，且此时需要手动执行<code>saveenv</code>命令才会永久保存。</li>
+</ol>
+<p>综上，kernel大小好改，rootfs大小不好改，若改为非8MiB，为了生效需要修改U-Boot源码且编译后更新。</p>
+<p>考虑需求与修改风险，故笔者决定暂将kernel部分分配3MiB，rootfs部分分配8MiB，且不修改已经刷入的U-Boot部分。</p>
+<h3 id="调整"><a href="#调整" class="headerlink" title="调整"></a>调整</h3><p>首先将闲置的TF卡格式化成FAT32，将从官方下载的<code>rootfs.squashfs.ssc335</code>和<code>uImage.ssc335</code>放到TF卡根目录。</p>
+<p>插入TF卡后上电进系统，在shell中执行如下命令调整分区布局：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fw_setenv kernsize 0x300000</span><br><span class="line">fw_setenv rootaddr 0x350000</span><br><span class="line">fw_setenv rootsize 0x800000</span><br><span class="line">fw_setenv rootmtd 8192k</span><br><span class="line">fw_setenv bootargs <span class="string">&#x27;console=ttyS0,115200 panic=20 root=/dev/mtdblock3 init=/init mtdparts=NOR_FLASH:256k(boot),64k(env),3072k(kernel),$&#123;rootmtd&#125;(rootfs),-(rootfs_data) LX_MEM=$&#123;memlx&#125; mma_heap=mma_heap_name0,miu=0,sz=$&#123;memsz&#125; cma=2M&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意<code>bootargs</code>值只是修改了kernel的大小，其他部分保持不变。</p>
+<p>然后重启，此时已经进入不了系统了，要在U-Boot阶段狂按回车进入它的shell。进入后执行如下命令重刷kernel和rootfs：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">run sdcard</span><br><span class="line">run uknor</span><br><span class="line">run urnor</span><br></pre></td></tr></table></figure>
+
+<p>再次重启后，分区调整完成。此时再次通过<code>cat /proc/mtd</code>命令查看分区信息，内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@openipc-ssc335:~# <span class="built_in">cat</span> /proc/mtd </span><br><span class="line">dev:    size   erasesize  name</span><br><span class="line">mtd0: 00040000 00010000 <span class="string">&quot;boot&quot;</span></span><br><span class="line">mtd1: 00010000 00010000 <span class="string">&quot;env&quot;</span></span><br><span class="line">mtd2: 00300000 00010000 <span class="string">&quot;kernel&quot;</span></span><br><span class="line">mtd3: 00800000 00010000 <span class="string">&quot;rootfs&quot;</span></span><br><span class="line">mtd4: 004b0000 00010000 <span class="string">&quot;rootfs_data&quot;</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
-<li><a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpproxy">Git有关代理的官方文档</a></li>
-<li><a target="_blank" rel="noopener" href="https://gist.github.com/laispace/666dd7b27e9116faece6">GitHub上的一个有关Git代理的讨论</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenIPC/wiki/blob/master/en/faq.md#differences-between-lite-and-ultimate">Lite和Ultimate版本区别</a></li>
+<li><a target="_blank" rel="noopener" href="https://openipc.org/tools/firmware-partitions-calculation">OpenIPC分区配置计算工具</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenIPC/u-boot-sigmastar/blob/master/include/configs/sstar-common.h#L37">U-Boot源码中的默认配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenIPC/u-boot-sigmastar/blob/master/common/cmd_sf.c#L185">U-Boot源码中的动态配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenIPC/firmware/blob/master/general/scripts/repack_firmware.sh">打包脚本</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.unroll.ing/">在线Binwalk</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenIPC/firmware/releases/tag/latest">固件下载地址</a></li>
 </ol>
 
     </div>
@@ -303,7 +343,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://blog.cubestone.wang/2024/01/10/git-question/" title="关于在Git中使用代理的探究">https://blog.cubestone.wang/2024/01/10/git-question/</a>
+      <a href="https://blog.cubestone.wang/2026/04/28/openipc-two/" title="H3C TC2101调整分区（OpenIPC系列二）">https://blog.cubestone.wang/2026/04/28/openipc-two/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -313,21 +353,19 @@
 
           <div class="post-tags">
               <a href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag"># 软件</a>
-              <a href="/tags/Git/" rel="tag"># Git</a>
+              <a href="/tags/OpenIPC/" rel="tag"># OpenIPC</a>
+              <a href="/tags/H3C-TC2101/" rel="tag"># H3C TC2101</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/01/10/exfat_question/" rel="prev" title="关于在exFAT中使用软链接的问题探究">
-                  <i class="fa fa-angle-left"></i> 关于在exFAT中使用软链接的问题探究
+                <a href="/2026/04/27/openipc-one/" rel="prev" title="H3C TC2101刷机（OpenIPC系列一）">
+                  <i class="fa fa-angle-left"></i> H3C TC2101刷机（OpenIPC系列一）
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/01/11/radius/" rel="next" title="有关RADIUS如何部署的探究">
-                  有关RADIUS如何部署的探究 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
